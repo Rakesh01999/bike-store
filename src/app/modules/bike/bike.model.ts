@@ -66,6 +66,10 @@ const bikeSchema = new Schema<TBike, BikeModel>(
       type: Date,
       default: Date.now,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    }
   },
   {
     toJSON: {
