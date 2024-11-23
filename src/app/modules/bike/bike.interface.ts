@@ -16,14 +16,14 @@ export type TBike = {
 };
 
 // Define the type for the Order
-export type TOrder = {
-    email: string;
-    product: Types.ObjectId; // Reference to a Bike's ObjectId
-    quantity: number;
-    totalPrice: number;
-    createdAt?: Date;
-    updatedAt?: Date;
-};
+// export type TOrder = {
+//     email: string;
+//     product: Types.ObjectId; // Reference to a Bike's ObjectId
+//     quantity: number;
+//     totalPrice: number;
+//     createdAt?: Date;
+//     updatedAt?: Date;
+// };
 
 // Extend the Model for static methods for the Bike
 export interface BikeModel extends Model<TBike> {
@@ -33,7 +33,7 @@ export interface BikeModel extends Model<TBike> {
 }
 
 // Extend the Model for static methods for the Order
-export interface OrderModel extends Model<TOrder> {
-    calculateRevenue(): Promise<number>;
-}
+// export interface OrderModel extends Model<TOrder> {
+//     calculateRevenue(): Promise<number>;
+// }
 

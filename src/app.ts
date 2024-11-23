@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import { BikeRoutes } from './app/modules/bike/bike.route';
+import { OrderRoutes } from './app/modules/order/order.route';
 
 const app: Application = express();
 
@@ -14,6 +15,8 @@ app.use(cors());
 // application routes
 // app.use('/api/v1/bikes', BikeRoutes);
 app.use('/api/products', BikeRoutes);
+app.use('/api', OrderRoutes);
+
 const getAController = (req: Request, res: Response) => {
   //   res.send('Hello World!')
   // const a = 10;

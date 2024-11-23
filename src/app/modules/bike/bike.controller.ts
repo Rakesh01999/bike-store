@@ -173,12 +173,62 @@ const deleteBike = async (req: Request, res: Response) => {
     }
 };
 
+
+export const updateBikeHandler = async (req: Request, res: Response) => {
+    const { productId } = req.params; // Extract product ID from route params
+    const updateData = req.body;     // Extract update data from request body
+
+    try {
+        // Call the service to update the bike
+        const updatedBike = await BikeServices.updateBikeInDB(productId, updateData);
+
+        // Respond with the updated bike details
+        res.status(200).json({
+            success: true,
+            data: updatedBike,
+        });
+    } catch (error) {
+        // Handle errors and send appropriate response
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Could not update the bike',
+        });
+    }
+};
+
+
+//  ------------- Order
+
+// export const createOrderHandler = async (req: Request, res: Response) => {
+//     const { email, product, quantity, totalPrice } = req.body;
+
+//     try {
+//         // Call the service function to create the order
+//         const order = await BikeServices.createOrderInDB({ email, product, quantity, totalPrice });
+
+//         // Respond with success
+//         res.status(201).json({
+//             message: 'Order created successfully',
+//             status: true,
+//             data: order,
+//         });
+//     } catch (error) {
+//         // Handle errors
+//         res.status(400).json({
+//             message: error.message || 'Failed to create order',
+//             status: false,
+//         });
+//     }
+// };
+
 export const BikeControllers = {
     createBike,
     getAllBikes,
     getSingleBike,
     deleteBike,
     getBikeByIdOrModelNumber,
-    getBikeById
+    getBikeById,
+    updateBikeHandler, 
+    // createOrderHandler
 };
 

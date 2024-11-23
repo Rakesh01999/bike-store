@@ -1,5 +1,5 @@
 import express from 'express';
-import { BikeControllers } from './bike.controller';
+import { BikeControllers, updateBikeHandler } from './bike.controller';
 
 const router = express.Router();
 
@@ -27,6 +27,16 @@ router.get('/bikes/:identifier', BikeControllers.getBikeByIdOrModelNumber);
 // router.get('/products/:productId', BikeControllers.getBikeById);
 
 router.get('/:productId', BikeControllers.getBikeById);
+
+
+
+// Define the PUT endpoint
+router.put('/:productId', BikeControllers.updateBikeHandler);
+
+
+// ------------ Order
+// Define the POST endpoint
+// router.post('/api/orders', BikeControllers.createOrderHandler);
 
 
 
