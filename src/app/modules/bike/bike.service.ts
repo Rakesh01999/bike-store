@@ -57,7 +57,8 @@ const getBikeById = async (productId: string) => {
 
 const deleteBikeFromDB = async (id: string) => {
     // Soft-delete a bike by marking it as deleted
-    const result = await Bike.updateOne({ modelNumber: id }, { isDeleted: true });
+    // const result = await Bike.updateOne({ modelNumber: id }, { isDeleted: true });
+    const result = await Bike.updateOne({ id }, { isDeleted: true });
     return result;
 };
 
