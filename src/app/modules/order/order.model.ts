@@ -31,34 +31,38 @@ const orderSchema = new Schema<TOrder, OrderModel>(
 
 // Add this static method in the orderSchema
 orderSchema.statics.calculateTotalRevenue = async function () {
-    const result = await this.aggregate([
+    try {
+      const result = await this.aggregate([
         {
-            $lookup: {
-                from: 'bikes', // Match with the 'Bike' collection
-                localField: 'product',
-                foreignField: '_id',
-                as: 'bikeDetails',
-            },
+          $lookup: {
+            from: 'bikes', // Match with the 'Bike' collection
+            localField: 'product',
+            foreignField: '_id',
+            as: 'bikeDetails',
+          },
         },
         { $unwind: '$bikeDetails' }, // Flatten the bikeDetails array
         {
-            $group: {
-                _id: null, // Group all documents together
-                totalRevenue: {
-                    $sum: { $multiply: ['$quantity', '$bikeDetails.price'] }, // Calculate revenue
-                },
+          $group: {
+            _id: null, // Group all documents together
+            totalRevenue: {
+              $sum: { $multiply: ['$quantity', '$bikeDetails.price'] }, // Calculate revenue
             },
+          },
         },
         {
-            $project: {
-                _id: 0, // Exclude _id field from the result
-                totalRevenue: 1, // Include totalRevenue field
-            },
+          $project: {
+            _id: 0, // Exclude _id field from the result
+            totalRevenue: 1, // Include totalRevenue field
+          },
         },
-    ]);
-
-    return result[0]?.totalRevenue || 0; // Return total revenue or 0 if no orders
-};
-
+      ]);
+  
+      return result[0]?.totalRevenue || 0; // Return total revenue or 0 if no orders
+    } catch (error) {
+      throw new Error('Error calculating revenue'); // Throw error to be caught by the controller
+    }
+  };
+  
 
 export const Order = model<TOrder, OrderModel>('Order', orderSchema);
