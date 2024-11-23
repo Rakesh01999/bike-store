@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
 import { BikeServices } from './bike.service';
-// import bikeValidationSchema from './bike.validation';
+import bikeValidationSchema from './bike.validation';
 
 const createBike = async (req: Request, res: Response) => {
     try {
         const { bike: bikeData } = req.body;
 
         // Validate the incoming data using Zod
-        // const validatedData = bikeValidationSchema.parse(bikeData);
+        const validatedData = bikeValidationSchema.parse(bikeData);
 
         // Save the bike to the database
-        // const result = await BikeServices.createBikeInDB(validatedData);
-        const result = await BikeServices.createBikeInDB(bikeData);
+        const result = await BikeServices.createBikeInDB(validatedData);
+        // const result = await BikeServices.createBikeInDB(bikeData);
 
         return res.status(200).json({
             success: true,

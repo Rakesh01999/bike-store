@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { TBike, TOrder, BikeModel, OrderModel } from './bike.interface';
-// import validator from 'validator';
+import validator from 'validator';
 
 // Bike Schema Definition
 const bikeSchema = new Schema<TBike, BikeModel>(
@@ -10,16 +10,25 @@ const bikeSchema = new Schema<TBike, BikeModel>(
       required: [true, 'Model Number is required'],
       unique: true,
       trim: true,
-    //   validate: {
-    //     validator: (value: string) => validator.isAlphanumeric(value),
-    //     message: '{VALUE} is not a valid model number',
-    //   },
+      // validate: {
+      //   validator: (value: string) => validator.isAlphanumeric(value),
+      //   message: '{VALUE} is not a valid model number',
+      // },
     },
     name: {
       type: String,
       required: [true, 'Bike name is required'],
       trim: true,
       maxlength: [50, 'Bike name cannot exceed 50 characters'],
+      validate: {
+        validator: function (value: string) {
+          const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1);
+          console.log(value);
+          console.log(firstNameStr);
+          return firstNameStr === value;
+        },
+        message: '{VALUE} is not in capitalize format',
+      }
     },
     brand: {
       type: String,
@@ -108,10 +117,10 @@ const orderSchema = new Schema<TOrder, OrderModel>(
     email: {
       type: String,
       required: [true, 'Email is required'],
-    //   validate: {
-    //     validator: (value: string) => validator.isEmail(value),
-    //     message: '{VALUE} is not a valid email address',
-    //   },
+      //   validate: {
+      //     validator: (value: string) => validator.isEmail(value),
+      //     message: '{VALUE} is not a valid email address',
+      //   },
     },
     product: {
       type: Schema.Types.ObjectId,
