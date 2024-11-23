@@ -67,30 +67,38 @@ const getAllBikes = async (req: Request, res: Response) => {
     try {
         const { searchTerm } = req.query;
 
-        // Build the filter object
-        const filter: any = {};
+        const filter: any = { isDeleted: false }; // Always exclude deleted bikes
         if (searchTerm) {
-            const regex = new RegExp(searchTerm as string, 'i'); // Case-insensitive regex
+            const regex = new RegExp(searchTerm as string, 'i');
             filter.$or = [
-                { name: regex },       // Matches bike name
-                { brand: regex },      // Matches bike brand
-                { category: regex },   // Matches bike category
+                { name: regex },
+                { brand: regex },
+                { category: regex },
             ];
         }
 
-        // Fetch bikes based on the filter
-        const bikes = await Bike.find({ ...filter, isDeleted: false });
+        console.log("Constructed Filter:", filter); // Debugging line
+
+        const bikes = await Bike.find(filter);
+
+        if (bikes.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No bikes found matching the search criteria",
+                data: [],
+            });
+        }
 
         res.status(200).json({
-            message: 'Bikes fetched successfully',
-            status: true,
+            success: true,
+            message: "Bikes fetched successfully",
             data: bikes,
         });
     } catch (error) {
-        console.error('Error fetching bikes:', error);
+        console.error("Error fetching bikes:", error);
         res.status(500).json({
-            message: 'An error occurred while fetching bikes',
-            status: false,
+            success: false,
+            message: "An error occurred while fetching bikes",
         });
     }
 };

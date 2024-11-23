@@ -13,10 +13,22 @@ const createBikeInDB = async (bikeData: TBike) => {
     return result;
 };
 
-const getAllBikesFromDB = async () => {
-    // Retrieve all bikes from the database
-    const result = await Bike.find();
-    return result;
+// const getAllBikesFromDB = async () => {
+//     // Retrieve all bikes from the database
+//     const result = await Bike.find();
+//     return result;
+// };
+
+
+//  ---------- Mod
+export const getAllBikesFromDB = async (filter: any) => {
+    try {
+        // Ensure the filter is correctly passed and applied
+        const bikes = await Bike.find(filter);
+        return bikes;
+    } catch (error) {
+        throw new Error("Error fetching bikes from database");
+    }
 };
 
 const getSingleBikeFromDB = async (id: string) => {
