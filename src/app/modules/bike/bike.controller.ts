@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { BikeServices } from './bike.service';
 import bikeValidationSchema from './bike.validation';
+import { Bike } from './bike.model';
 
 const createBike = async (req: Request, res: Response) => {
     try {
@@ -18,7 +19,7 @@ const createBike = async (req: Request, res: Response) => {
             message: 'Bike created successfully',
             data: result,
         });
-    } 
+    }
     catch (err) {
         // console.error(err);
         console.log(err);
@@ -40,26 +41,60 @@ const createBike = async (req: Request, res: Response) => {
     }
 };
 
+// const getAllBikes = async (req: Request, res: Response) => {
+//     try {
+//         const result = await BikeServices.getAllBikesFromDB();
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Bikes retrieved successfully',
+//             data: result,
+//         });
+//     } 
+//     // catch (err: any) {
+//     catch (err) {
+//         // return res.status(500).json({
+//         //     success: false,
+//         //     message: err.message || 'Something went wrong',
+//         //     error: err,
+//         // });
+//         console.log(err);
+//     }
+// };
+
+//  ---------- Mod 
 const getAllBikes = async (req: Request, res: Response) => {
     try {
-        const result = await BikeServices.getAllBikesFromDB();
+        const { searchTerm } = req.query;
 
-        return res.status(200).json({
-            success: true,
-            message: 'Bikes retrieved successfully',
-            data: result,
+        // Build the filter object
+        const filter: any = {};
+        if (searchTerm) {
+            const regex = new RegExp(searchTerm as string, 'i'); // Case-insensitive regex
+            filter.$or = [
+                { name: regex },       // Matches bike name
+                { brand: regex },      // Matches bike brand
+                { category: regex },   // Matches bike category
+            ];
+        }
+
+        // Fetch bikes based on the filter
+        const bikes = await Bike.find({ ...filter, isDeleted: false });
+
+        res.status(200).json({
+            message: 'Bikes fetched successfully',
+            status: true,
+            data: bikes,
         });
-    } 
-    // catch (err: any) {
-    catch (err) {
-        // return res.status(500).json({
-        //     success: false,
-        //     message: err.message || 'Something went wrong',
-        //     error: err,
-        // });
-        console.log(err);
+    } catch (error) {
+        console.error('Error fetching bikes:', error);
+        res.status(500).json({
+            message: 'An error occurred while fetching bikes',
+            status: false,
+        });
     }
 };
+
 
 const getSingleBike = async (req: Request, res: Response) => {
     try {
@@ -228,7 +263,7 @@ export const BikeControllers = {
     deleteBike,
     getBikeByIdOrModelNumber,
     getBikeById,
-    updateBikeHandler, 
+    updateBikeHandler,
     // createOrderHandler
 };
 

@@ -80,9 +80,9 @@ const bikeSchema = new Schema<TBike, BikeModel>(
 );
 
 // Virtual Field
-bikeSchema.virtual('availabilityStatus').get(function () {
-  return this.inStock ? 'Available' : 'Out of Stock';
-});
+// bikeSchema.virtual('availabilityStatus').get(function () {
+//   return this.inStock ? 'Available' : 'Out of Stock';
+// });
 
 // Middleware - Pre-save hook to ensure stock consistency
 bikeSchema.pre('save', async function (next) {
