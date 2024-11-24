@@ -1,4 +1,5 @@
-import { Schema, model, Model, Types } from 'mongoose';
+// import { Schema, model, Model, Types } from 'mongoose';
+import { Model} from 'mongoose';
 
 // Define the type for the Product (Bike)
 export type TBike = {
@@ -27,10 +28,14 @@ export type TBike = {
 
 // Extend the Model for static methods for the Bike
 export interface BikeModel extends Model<TBike> {
+    /* eslint-disable no-unused-vars */
     isBikeAvailable(id: string): Promise<TBike | null>;
     reduceStock(id: string, quantity: number): Promise<void>;
     isBikeExists(modelNumber: string): Promise<boolean>; 
+     
 }
+
+
 
 // Extend the Model for static methods for the Order
 // export interface OrderModel extends Model<TOrder> {

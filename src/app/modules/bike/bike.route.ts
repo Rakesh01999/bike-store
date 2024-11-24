@@ -1,5 +1,6 @@
 import express from 'express';
-import { BikeControllers, updateBikeHandler } from './bike.controller';
+// import { BikeControllers, updateBikeHandler } from './bike.controller';
+import { BikeControllers } from './bike.controller';
 
 const router = express.Router();
 

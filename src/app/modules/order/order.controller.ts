@@ -4,7 +4,7 @@ import { Bike } from '../bike/bike.model';
 import mongoose from 'mongoose';
 
 // Create an order and update inventory
-const createOrder = async (req: Request, res: Response) => {
+const createOrder = async (req: Request, res: Response): Promise<void> => {
     const session = await mongoose.startSession(); // Start a session for atomic operations
     session.startTransaction();
 
@@ -13,27 +13,41 @@ const createOrder = async (req: Request, res: Response) => {
 
         // Validate input
         if (!email || !product || !quantity) {
-            return res.status(400).json({
+            res.status(400).json({
+                success: false,
                 message: 'Email, product, and quantity are required',
-                status: false,
             });
+            return; // Stop execution
         }
 
         // Check if the product exists
         const bike = await Bike.findById(product).session(session);
-        if (!bike || bike.isDeleted) {
-            return res.status(404).json({
-                message: 'Product not found or unavailable',
-                status: false,
+
+        // Handle case where bike is null
+        if (!bike) {
+            res.status(404).json({
+                success: false,
+                message: 'Product not found',
             });
+            return; // Stop execution
+        }
+
+        // Handle case where bike is deleted
+        if (bike.isDeleted) {
+            res.status(404).json({
+                success: false,
+                message: 'Product is no longer available',
+            });
+            return; // Stop execution
         }
 
         // Check inventory stock
         if (bike.quantity < quantity) {
-            return res.status(400).json({
+            res.status(400).json({
+                success: false,
                 message: 'Insufficient stock to fulfill the order',
-                status: false,
             });
+            return; // Stop execution
         }
 
         // Calculate total price
@@ -65,25 +79,27 @@ const createOrder = async (req: Request, res: Response) => {
         };
 
         // Send the response
-        return res.status(201).json({
+        res.status(201).json({
+            success: true,
             message: 'Order created successfully',
-            status: true,
             data: responseData,
         });
     } catch (error) {
-        await session.abortTransaction(); // Rollback transaction if an error occurs
+        // Rollback transaction if an error occurs
+        await session.abortTransaction();
         session.endSession();
 
         console.error('Error creating order:', error);
-        return res.status(500).json({
+        res.status(500).json({
+            success: false,
             message: 'An error occurred while creating the order',
-            status: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
         });
     }
 };
 
 // Calculate total revenue from all orders
-const calculateRevenue = async (req: Request, res: Response) => {
+const calculateRevenue = async (req: Request, res: Response): Promise<void> => {
     try {
         const totalRevenue = await Order.aggregate([
             { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } },
@@ -91,18 +107,22 @@ const calculateRevenue = async (req: Request, res: Response) => {
 
         const revenue = totalRevenue[0]?.totalRevenue || 0;
 
-        return res.status(200).json({
+        res.status(200).json({
+            success: true,
             message: 'Revenue calculated successfully',
-            status: true,
             data: {
                 totalRevenue: revenue,
             },
         });
-    } catch (error: any) {
-        console.error('Error calculating revenue:', error.message);
-        return res.status(500).json({
-            message: error.message || 'An unexpected error occurred',
-            status: false,
+    } catch (error: unknown) {
+        // Type-safe handling of the error
+        const errorMessage =
+            error instanceof Error ? error.message : 'An unexpected error occurred';
+
+        console.error('Error calculating revenue:', errorMessage);
+        res.status(500).json({
+            success: false,
+            message: errorMessage,
         });
     }
 };

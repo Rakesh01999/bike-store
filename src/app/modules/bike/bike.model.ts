@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
-import { TBike, TOrder, BikeModel, OrderModel } from './bike.interface';
-import validator from 'validator';
+import { TBike,  BikeModel } from './bike.interface';
+// import { TBike, TOrder, BikeModel, OrderModel } from './bike.interface';
+// import validator from 'validator';
 
 // Bike Schema Definition
 const bikeSchema = new Schema<TBike, BikeModel>(
